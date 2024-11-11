@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
 
     fun bt1(v: View) {
-        stateView?.setState(this, 2)
+        stateView?.setState(this, 1)
         stateView1?.setState(this, 0)
         stateView2?.visibility =View.GONE
     }

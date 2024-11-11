@@ -1,51 +1,70 @@
 package com.example.myapplication4
 
+
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.FrameLayout
+import com.example.myapplication4.R
+
+public class LotView : FrameLayout {
+
+    // 定义三种状态
+    val STATE_ONE = 0
+    val STATE_TWO = 1
+    val STATE_THREE = 2
+
+    private var currentState = STATE_ONE
 
 
-class LotView : View {
-    private var paint: Paint? = null
-    private val radius = 100 // 圆的半径
+    constructor(context: Context?) : super(context!!) {
 
-    // 构造方法1：仅带有Context参数
-    constructor(context: Context?) : super(context) {
-        init()
+        init(context, null)
+
     }
 
-    // 构造方法2：带有Context和AttributeSet参数
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
-        init()
+    constructor(context: Context?, attrs: AttributeSet?) : super(context!!, attrs, 0) {
+        init(context, attrs)
     }
 
-    // 构造方法3：带有Context、AttributeSet和defStyleAttr参数
+
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
+        context!!,
         attrs,
         defStyleAttr
     ) {
-        init()
+        init(context, attrs)
     }
 
-    // 初始化Paint对象
-    private fun init() {
-        paint = Paint()
-        paint!!.color = Color.BLUE // 设置颜色为蓝色
-        paint!!.style = Paint.Style.FILL // 填充样式
-        paint!!.isAntiAlias = true // 抗锯齿
+
+    private fun init(context: Context, attrs: AttributeSet?) {
+        if (attrs != null) {
+            val array = context.obtainStyledAttributes(attrs, R.styleable.StatefulView)
+            currentState = array.getInt(R.styleable.StatefulView_state, 0)
+        }
+        addView(updateView(context))
     }
 
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        // 获取控件的中心点
-        val cx = width / 2
-        val cy = height / 2
-
-        // 绘制一个圆
-        canvas.drawCircle(cx.toFloat(), cy.toFloat(), radius.toFloat(), paint!!)
+    fun setState(ctx: Context, state: Int) {
+        currentState = state
+        removeAllViews()  // 移除当前所有子 View
+        addView(updateView(ctx))  // 添加新的 View
     }
+
+    fun getState(): Int {
+        return currentState
+    }
+
+
+    private fun updateView(ctx: Context): View {
+        var layout: Int = when (currentState) {
+            STATE_ONE -> R.layout.state_one_layout
+            STATE_TWO, STATE_THREE -> R.layout.state_two_layout
+            else -> R.layout.state_two_layout
+        }
+        return LayoutInflater.from(ctx).inflate(layout, this, false)
+    }
+
+
 }
